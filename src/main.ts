@@ -2,8 +2,8 @@ import { Application, Graphics } from "pixi.js";
 import { setupMinesDropdown, getSelectedMines } from "./dropdown";
 
 const nextMultipliers = [
-  1.01, 1.05, 1.10, 1.15, 1.21, 1.26, 1.34, 1.42, 1.51, 1.61,
-  1.73, 1.86, 2.02, 2.20, 2.42, 2.69, 3.03, 3.46, 4.04, 4.85
+  1.01, 1.05, 1.1, 1.15, 1.21, 1.26, 1.34, 1.42, 1.51, 1.61, 1.73, 1.86, 2.02,
+  2.2, 2.42, 2.69, 3.03, 3.46, 4.04, 4.85,
 ];
 
 class MinesGame {
@@ -26,8 +26,12 @@ class MinesGame {
   }
 
   drawInactiveGrid() {
-    const betBtn = document.querySelector(".bet-main-btn") as HTMLButtonElement | null;
-    const cashoutBtn = document.querySelector(".cashout-btn") as HTMLButtonElement | null;
+    const betBtn = document.querySelector(
+      ".bet-main-btn",
+    ) as HTMLButtonElement | null;
+    const cashoutBtn = document.querySelector(
+      ".cashout-btn",
+    ) as HTMLButtonElement | null;
     if (betBtn) betBtn.style.display = "flex";
     if (cashoutBtn) cashoutBtn.style.display = "none";
     const pixiContainer = document.getElementById("pixi-container");
@@ -66,11 +70,19 @@ class MinesGame {
   }
 
   setBetControlsDisabled(disabled: boolean) {
-    const minesDropdownBtn = document.getElementById("mines-dropdown-btn") as HTMLButtonElement;
-    const betInput = document.getElementById("bet-amount-input") as HTMLInputElement;
+    const minesDropdownBtn = document.getElementById(
+      "mines-dropdown-btn",
+    ) as HTMLButtonElement;
+    const betInput = document.getElementById(
+      "bet-amount-input",
+    ) as HTMLInputElement;
     const betPlusBtn = document.querySelector(".bet-plus") as HTMLButtonElement;
-    const betMinusBtn = document.querySelector(".bet-minus") as HTMLButtonElement;
-    const betStackBtn = document.querySelector(".bet-stack") as HTMLButtonElement;
+    const betMinusBtn = document.querySelector(
+      ".bet-minus",
+    ) as HTMLButtonElement;
+    const betStackBtn = document.querySelector(
+      ".bet-stack",
+    ) as HTMLButtonElement;
     if (minesDropdownBtn) minesDropdownBtn.disabled = disabled;
     if (betInput) betInput.disabled = disabled;
     if (betPlusBtn) betPlusBtn.disabled = disabled;
@@ -106,17 +118,22 @@ class MinesGame {
 
   updateCashoutButtonWin() {
     const betAmount = parseFloat(
-      (document.getElementById("bet-amount-input") as HTMLInputElement)?.value || "0.30"
+      (document.getElementById("bet-amount-input") as HTMLInputElement)
+        ?.value || "0.30",
     );
     const winnings = betAmount * this.currentMultiplier;
-    const cashoutBtn = document.querySelector(".cashout-btn") as HTMLButtonElement;
+    const cashoutBtn = document.querySelector(
+      ".cashout-btn",
+    ) as HTMLButtonElement;
     if (cashoutBtn) {
       cashoutBtn.innerHTML = `<span class="cashout-icon">💰</span> CASH OUT $${winnings.toFixed(2)}`;
     }
   }
 
   resetCashoutButton() {
-    const cashoutBtn = document.querySelector(".cashout-btn") as HTMLButtonElement;
+    const cashoutBtn = document.querySelector(
+      ".cashout-btn",
+    ) as HTMLButtonElement;
     if (cashoutBtn) {
       cashoutBtn.innerHTML = `<span class="cashout-icon">💰</span> CASH OUT`;
     }
@@ -136,126 +153,141 @@ class MinesGame {
       pixiContainer.innerHTML = "";
     }
     this.app = new Application();
-    this.app.init({ background: "#024594", width: 500, height: 500 }).then(() => {
-      document.getElementById("pixi-container")!.appendChild(this.app!.canvas);
-      const gridSize = 5;
-      const cellSize = 60;
-      const padding = 10;
-      const gridPixelSize = gridSize * cellSize + (gridSize - 1) * padding;
-      const startX = (500 - gridPixelSize) / 2;
-      const startY = (500 - gridPixelSize) / 2;
-      const totalCells = gridSize * gridSize;
-      const bombIndices = new Set<number>();
-      while (bombIndices.size < bombCount) {
-        bombIndices.add(Math.floor(Math.random() * totalCells));
-      }
-      this.squares = [];
-      this.gameOver = false;
-      let cellIndex = 0;
-      let safeRevealed = 0;
-      const totalSafe = totalCells - bombCount;
-      this.updateProgressBar(0, totalSafe);
-      for (let row = 0; row < gridSize; row++) {
-        for (let col = 0; col < gridSize; col++) {
-          const square = new Graphics();
-          square.lineStyle(2, 0x3fa9f5);
-          square.beginFill(0x0a2a47);
-          square.drawRoundedRect(0, 0, cellSize, cellSize, 10);
-          square.endFill();
-          square.beginFill(0x2176ae);
-          square.drawCircle(cellSize / 2, cellSize / 2, 14);
-          square.endFill();
-          square.x = startX + col * (cellSize + padding);
-          square.y = startY + row * (cellSize + padding);
-          square.eventMode = "static";
-          square.cursor = "pointer";
-          const isBomb = bombIndices.has(cellIndex);
-          const thisIndex = cellIndex;
-          this.squares.push({ g: square, isBomb, revealed: false });
-          square.on("pointerdown", () => {
-            if (this.gameOver || this.squares[thisIndex].revealed) return;
-            this.squares[thisIndex].revealed = true;
-            square.clear();
-            square.lineStyle(2, 0x3fa9f5);
-            if (isBomb) {
-              this.gameOver = true;
-              this.updateProgressBar(0, totalSafe);
-              this.setBetControlsDisabled(false);
-              const betBtn = document.querySelector(".bet-main-btn") as HTMLButtonElement;
-              const cashoutBtn = document.querySelector(".cashout-btn") as HTMLButtonElement;
-              if (betBtn) betBtn.style.display = "none";
-              if (cashoutBtn) cashoutBtn.style.display = "flex";
-              setTimeout(() => {
-                if (betBtn) {
-                  this.isAutoRestarting = true;
-                  betBtn.click();
-                  this.isAutoRestarting = false;
-                }
-                if (cashoutBtn) cashoutBtn.style.display = "none";
-                if (betBtn) betBtn.style.display = "flex";
-                this.setBetControlsDisabled(false);
-              }, 2000);
-              for (let i = 0; i < this.squares.length; i++) {
-                const sq = this.squares[i];
-                sq.g.clear();
-                sq.g.lineStyle(2, 0x3fa9f5);
-                if (sq.isBomb) {
-                  sq.g.beginFill(0xff2d55);
-                  sq.g.drawRoundedRect(0, 0, cellSize, cellSize, 10);
-                  sq.g.endFill();
-                  sq.g.beginFill(0x000000);
-                  sq.g.drawCircle(cellSize / 2, cellSize / 2, 14);
-                  sq.g.endFill();
-                  sq.g.lineStyle(3, 0xffffff);
-                  sq.g.moveTo(cellSize / 2 - 8, cellSize / 2 - 8);
-                  sq.g.lineTo(cellSize / 2 + 8, cellSize / 2 + 8);
-                  sq.g.moveTo(cellSize / 2 + 8, cellSize / 2 - 8);
-                  sq.g.lineTo(cellSize / 2 - 8, cellSize / 2 + 8);
-                } else {
-                  sq.g.beginFill(0x3fd37a);
-                  sq.g.drawRoundedRect(0, 0, cellSize, cellSize, 10);
-                  sq.g.endFill();
-                  sq.g.beginFill(0x2176ae);
-                  sq.g.drawCircle(cellSize / 2, cellSize / 2, 14);
-                  sq.g.endFill();
-                }
-                sq.revealed = true;
-              }
-            } else {
-              square.beginFill(0x3fd37a);
-              square.drawRoundedRect(0, 0, cellSize, cellSize, 10);
-              square.endFill();
-              square.beginFill(0x2176ae);
-              square.drawCircle(cellSize / 2, cellSize / 2, 14);
-              square.endFill();
-              safeRevealed++;
-              this.updateProgressBar(safeRevealed, totalSafe);
-              const revealed = this.squares.filter((sq) => sq.revealed).length;
-              const remaining = totalCells - revealed;
-              const safeLeft = totalCells - bombCount - safeRevealed + 1;
-              if (remaining > 0 && safeLeft > 0) {
-                const prob = safeLeft / remaining;
-                this.currentMultiplier = this.currentMultiplier * (1 / prob);
-                this.updateNextMultiplierUI();
-                this.updateCashoutButtonWin();
-              }
-            }
-          });
-          this.app!.stage.addChild(square);
-          cellIndex++;
+    this.app
+      .init({ background: "#024594", width: 500, height: 500 })
+      .then(() => {
+        document
+          .getElementById("pixi-container")!
+          .appendChild(this.app!.canvas);
+        const gridSize = 5;
+        const cellSize = 60;
+        const padding = 10;
+        const gridPixelSize = gridSize * cellSize + (gridSize - 1) * padding;
+        const startX = (500 - gridPixelSize) / 2;
+        const startY = (500 - gridPixelSize) / 2;
+        const totalCells = gridSize * gridSize;
+        const bombIndices = new Set<number>();
+        while (bombIndices.size < bombCount) {
+          bombIndices.add(Math.floor(Math.random() * totalCells));
         }
-      }
-    });
+        this.squares = [];
+        this.gameOver = false;
+        let cellIndex = 0;
+        let safeRevealed = 0;
+        const totalSafe = totalCells - bombCount;
+        this.updateProgressBar(0, totalSafe);
+        for (let row = 0; row < gridSize; row++) {
+          for (let col = 0; col < gridSize; col++) {
+            const square = new Graphics();
+            square.lineStyle(2, 0x3fa9f5);
+            square.beginFill(0x0a2a47);
+            square.drawRoundedRect(0, 0, cellSize, cellSize, 10);
+            square.endFill();
+            square.beginFill(0x2176ae);
+            square.drawCircle(cellSize / 2, cellSize / 2, 14);
+            square.endFill();
+            square.x = startX + col * (cellSize + padding);
+            square.y = startY + row * (cellSize + padding);
+            square.eventMode = "static";
+            square.cursor = "pointer";
+            const isBomb = bombIndices.has(cellIndex);
+            const thisIndex = cellIndex;
+            this.squares.push({ g: square, isBomb, revealed: false });
+            square.on("pointerdown", () => {
+              if (this.gameOver || this.squares[thisIndex].revealed) return;
+              this.squares[thisIndex].revealed = true;
+              square.clear();
+              square.lineStyle(2, 0x3fa9f5);
+              if (isBomb) {
+                this.gameOver = true;
+                this.updateProgressBar(0, totalSafe);
+                this.setBetControlsDisabled(false);
+                const betBtn = document.querySelector(
+                  ".bet-main-btn",
+                ) as HTMLButtonElement;
+                const cashoutBtn = document.querySelector(
+                  ".cashout-btn",
+                ) as HTMLButtonElement;
+                if (betBtn) betBtn.style.display = "none";
+                if (cashoutBtn) cashoutBtn.style.display = "flex";
+                setTimeout(() => {
+                  if (betBtn) {
+                    this.isAutoRestarting = true;
+                    betBtn.click();
+                    this.isAutoRestarting = false;
+                  }
+                  if (cashoutBtn) cashoutBtn.style.display = "none";
+                  if (betBtn) betBtn.style.display = "flex";
+                  this.setBetControlsDisabled(false);
+                }, 2000);
+                for (let i = 0; i < this.squares.length; i++) {
+                  const sq = this.squares[i];
+                  sq.g.clear();
+                  sq.g.lineStyle(2, 0x3fa9f5);
+                  if (sq.isBomb) {
+                    sq.g.beginFill(0xff2d55);
+                    sq.g.drawRoundedRect(0, 0, cellSize, cellSize, 10);
+                    sq.g.endFill();
+                    sq.g.beginFill(0x000000);
+                    sq.g.drawCircle(cellSize / 2, cellSize / 2, 14);
+                    sq.g.endFill();
+                    sq.g.lineStyle(3, 0xffffff);
+                    sq.g.moveTo(cellSize / 2 - 8, cellSize / 2 - 8);
+                    sq.g.lineTo(cellSize / 2 + 8, cellSize / 2 + 8);
+                    sq.g.moveTo(cellSize / 2 + 8, cellSize / 2 - 8);
+                    sq.g.lineTo(cellSize / 2 - 8, cellSize / 2 + 8);
+                  } else {
+                    sq.g.beginFill(0x3fd37a);
+                    sq.g.drawRoundedRect(0, 0, cellSize, cellSize, 10);
+                    sq.g.endFill();
+                    sq.g.beginFill(0x2176ae);
+                    sq.g.drawCircle(cellSize / 2, cellSize / 2, 14);
+                    sq.g.endFill();
+                  }
+                  sq.revealed = true;
+                }
+              } else {
+                square.beginFill(0x3fd37a);
+                square.drawRoundedRect(0, 0, cellSize, cellSize, 10);
+                square.endFill();
+                square.beginFill(0x2176ae);
+                square.drawCircle(cellSize / 2, cellSize / 2, 14);
+                square.endFill();
+                safeRevealed++;
+                this.updateProgressBar(safeRevealed, totalSafe);
+                const revealed = this.squares.filter(
+                  (sq) => sq.revealed,
+                ).length;
+                const remaining = totalCells - revealed;
+                const safeLeft = totalCells - bombCount - safeRevealed;
+                if (remaining > 0 && safeLeft > 0) {
+                  const prob = safeLeft / remaining;
+                  this.currentMultiplier = this.currentMultiplier * (1 / prob);
+                  this.updateNextMultiplierUI();
+                  this.updateCashoutButtonWin();
+                }
+              }
+            });
+            this.app!.stage.addChild(square);
+            cellIndex++;
+          }
+        }
+      });
   }
 
   setupEventListeners() {
     const betBtn = document.querySelector(".bet-main-btn") as HTMLButtonElement;
-    const cashoutBtn = document.querySelector(".cashout-btn") as HTMLButtonElement;
-    const randomBtn = document.querySelector(".random-btn") as HTMLButtonElement;
+    const cashoutBtn = document.querySelector(
+      ".cashout-btn",
+    ) as HTMLButtonElement;
+    const randomBtn = document.querySelector(
+      ".random-btn",
+    ) as HTMLButtonElement;
     if (betBtn) {
       betBtn.addEventListener("click", () => {
         const betAmount = parseFloat(
-          (document.getElementById("bet-amount-input") as HTMLInputElement)?.value || "0.30"
+          (document.getElementById("bet-amount-input") as HTMLInputElement)
+            ?.value || "0.30",
         );
         if (!this.isAutoRestarting) {
           this.currentBalance -= betAmount;
@@ -263,7 +295,10 @@ class MinesGame {
         }
         this.setBetControlsDisabled(true);
         const mines = getSelectedMines();
-        const idx = Math.max(0, Math.min(nextMultipliers.length - 1, mines - 1));
+        const idx = Math.max(
+          0,
+          Math.min(nextMultipliers.length - 1, mines - 1),
+        );
         this.currentMultiplier = nextMultipliers[idx];
         this.updateNextMultiplierUIForMines(mines);
         this.resetCashoutButton();
@@ -278,7 +313,8 @@ class MinesGame {
       cashoutBtn.addEventListener("click", () => {
         if (this.gameOver) return;
         const bet = parseFloat(
-          (document.getElementById("bet-amount-input") as HTMLInputElement)?.value || "0.30"
+          (document.getElementById("bet-amount-input") as HTMLInputElement)
+            ?.value || "0.30",
         );
         this.currentBalance += bet * this.currentMultiplier;
         this.updateBalance(this.currentBalance);
@@ -286,16 +322,17 @@ class MinesGame {
         this.setBetControlsDisabled(false);
         cashoutBtn.style.display = "none";
         betBtn.style.display = "flex";
-        
-        // Reset progress bar to 0
+
         this.updateProgressBar(0, 1);
-        
-        // Reset multiplier to initial value
+
         const mines = getSelectedMines();
-        const idx = Math.max(0, Math.min(nextMultipliers.length - 1, mines - 1));
+        const idx = Math.max(
+          0,
+          Math.min(nextMultipliers.length - 1, mines - 1),
+        );
         this.currentMultiplier = nextMultipliers[idx];
         this.updateNextMultiplierUIForMines(mines);
-        
+
         this.drawInactiveGrid();
       });
     }
@@ -355,13 +392,15 @@ class MinesGame {
               randomSquare.g.beginFill(0x2176ae);
               randomSquare.g.drawCircle(30, 30, 14);
               randomSquare.g.endFill();
-              const safeRevealed = this.squares.filter((sq) => sq.revealed && !sq.isBomb).length;
+              const safeRevealed = this.squares.filter(
+                (sq) => sq.revealed && !sq.isBomb,
+              ).length;
               const totalSafe = this.squares.length - getSelectedMines();
               this.updateProgressBar(safeRevealed, totalSafe);
               const totalCells = this.squares.length;
               const revealed = this.squares.filter((sq) => sq.revealed).length;
               const remaining = totalCells - revealed;
-              const safeLeft = totalCells - getSelectedMines() - safeRevealed + 1;
+              const safeLeft = totalCells - getSelectedMines() - safeRevealed;
               if (remaining > 0 && safeLeft > 0) {
                 const prob = safeLeft / remaining;
                 this.currentMultiplier = this.currentMultiplier * (1 / prob);
@@ -376,8 +415,12 @@ class MinesGame {
   }
 
   setupBetKeypad() {
-    const betInput = document.getElementById("bet-amount-input") as HTMLInputElement;
-    const keypadContainer = document.getElementById("keypad-container") as HTMLDivElement;
+    const betInput = document.getElementById(
+      "bet-amount-input",
+    ) as HTMLInputElement;
+    const keypadContainer = document.getElementById(
+      "keypad-container",
+    ) as HTMLDivElement;
     if (!betInput || !keypadContainer) return;
 
     function showKeypad() {
@@ -395,7 +438,10 @@ class MinesGame {
     }
 
     function handleOutsideClick(e: MouseEvent) {
-      if (!keypadContainer.contains(e.target as Node) && e.target !== betInput) {
+      if (
+        !keypadContainer.contains(e.target as Node) &&
+        e.target !== betInput
+      ) {
         hideKeypad();
       }
     }
@@ -427,11 +473,19 @@ class MinesGame {
   }
 
   setupBetList() {
-    const betInput = document.getElementById("bet-amount-input") as HTMLInputElement;
-    const betListContainer = document.getElementById("bet-list-container") as HTMLDivElement;
-    const betStackBtn = document.querySelector(".bet-stack") as HTMLButtonElement;
+    const betInput = document.getElementById(
+      "bet-amount-input",
+    ) as HTMLInputElement;
+    const betListContainer = document.getElementById(
+      "bet-list-container",
+    ) as HTMLDivElement;
+    const betStackBtn = document.querySelector(
+      ".bet-stack",
+    ) as HTMLButtonElement;
     const betPlusBtn = document.querySelector(".bet-plus") as HTMLButtonElement;
-    const betMinusBtn = document.querySelector(".bet-minus") as HTMLButtonElement;
+    const betMinusBtn = document.querySelector(
+      ".bet-minus",
+    ) as HTMLButtonElement;
     if (!betInput || !betListContainer) return;
 
     const betValues = [
@@ -526,5 +580,4 @@ class MinesGame {
   }
 }
 
-// Initialize the game
-const game = new MinesGame();
+new MinesGame();
