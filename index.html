@@ -1,126 +1,146 @@
 <!doctype html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/style.css" />
     <title>Mines game</title>
-</head>
+  </head>
 
-<body>
+  <body>
     <div id="header-bar">
-        <div class="header-left">
-            <button class="header-menu-btn">MINES</button>
-            <button class="header-help-btn">How to Play?</button>
-        </div>
-        <div class="header-center">
-            <span class="header-fun-mode">FUN MODE</span>
-        </div>
-        <div class="header-right">
-            <span class="header-balance">3,000.00 USD</span>
-            <button class="header-menu-icon">&#9776;</button>
-        </div>
+      <div class="header-left">
+        <button class="header-menu-btn">MINES</button>
+        <button class="header-help-btn">How to Play?</button>
+      </div>
+      <div class="header-center">
+        <span class="header-fun-mode">FUN MODE</span>
+      </div>
+      <div class="header-right">
+        <span class="header-balance">3,000.00 USD</span>
+        <button class="header-menu-icon">&#9776;</button>
+      </div>
     </div>
     <div id="app">
-        <div id="main-container">
-            <div id="dropdown-container">
-                <div id="dropdown-content">
-                    <button id="mines-dropdown-btn" class="mines-dropdown-btn">
-                        Mines: <span id="mines-chosen">3</span>
-                        <span class="dropdown-arrow">&#9662;</span>
-                    </button>
-                    <ul id="mines-dropdown-list" class="mines-dropdown-list">
-                        
-                    </ul>
-                </div>
-                <div id="next-container">
-                    <p>next: <span>1:10x</span></p>
-                </div>
-            </div>
-            <div id="progress-bar-container">
-                <div id="progress-bar-fill"></div>
-            </div>
-            <div id="pixi-container"></div>
-            <div class="random-autogame-bar">
-                <button class="random-btn">RANDOM</button>
-                <label class="autogame-switch">
-                    <input type="checkbox" id="autogame-toggle">
-                    <span class="slider"></span>
-                </label>
-                <span class="autogame-label">Auto Game</span>
-            </div>
-            <div id="bet-bar">
-                <div class="bet-group">
-                    <input id="bet-amount-input" class="bet-amount-input" type="text" readonly placeholder="Bet USD" value="0.30" />
-                    <button class="bet-circle-btn bet-minus">−</button>
-                    <button class="bet-circle-btn bet-stack">&#128176;</button>
-                    <button class="bet-circle-btn bet-plus">+</button>
-                </div>
-                <div id="bet-list-container" class="bet-list-container" style="display:none;">
-                    <div class="bet-list-title">Bet USD</div>
-                    <div class="bet-list-grid">
-                        <button class="bet-list-btn">0.10</button>
-                        <button class="bet-list-btn">0.20</button>
-                        <button class="bet-list-btn">0.30</button>
-                        <button class="bet-list-btn">0.40</button>
-                        <button class="bet-list-btn">0.50</button>
-                        <button class="bet-list-btn">0.60</button>
-                        <button class="bet-list-btn">0.70</button>
-                        <button class="bet-list-btn">0.80</button>
-                        <button class="bet-list-btn">1.20</button>
-                        <button class="bet-list-btn">2.00</button>
-                        <button class="bet-list-btn">4.00</button>
-                        <button class="bet-list-btn">10.00</button>
-                        <button class="bet-list-btn">20.00</button>
-                        <button class="bet-list-btn">50.00</button>
-                        <button class="bet-list-btn">100.00</button>
-                    </div>
-                </div>
-                <div id="keypad-container" style="display:none;">
-                    <div id="custom-keypad" class="custom-keypad">
-                        <div class="keypad-row">
-                            <button class="keypad-btn">1</button>
-                            <button class="keypad-btn">2</button>
-                            <button class="keypad-btn">3</button>
-                        </div>
-                        <div class="keypad-row">
-                            <button class="keypad-btn">4</button>
-                            <button class="keypad-btn">5</button>
-                            <button class="keypad-btn">6</button>
-                        </div>
-                        <div class="keypad-row">
-                            <button class="keypad-btn">7</button>
-                            <button class="keypad-btn">8</button>
-                            <button class="keypad-btn">9</button>
-                        </div>
-                        <div class="keypad-row">
-                            <button class="keypad-btn">.</button>
-                            <button class="keypad-btn">0</button>
-                            <button class="keypad-btn keypad-backspace">&#9003;</button>
-                        </div>
-                        <div class="keypad-row">
-                            <button class="keypad-btn keypad-confirm">
-                                <svg width="40" height="24" viewBox="0 0 40 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M8 8L20 20L32 8" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <button class="bet-circle-btn bet-refresh">&#8635;</button>
-                <button class="bet-main-btn">
-                    <span class="bet-play-icon">&#9654;</span>
-                    BET
-                </button>
-                <button class="cashout-btn" style="display:none;">
-                    <span class="cashout-icon">💰</span>
-                    CASH OUT
-                </button>
-            </div>
-            
+      <div id="main-container">
+        <div id="dropdown-container">
+          <div id="dropdown-content">
+            <button id="mines-dropdown-btn" class="mines-dropdown-btn">
+              Mines: <span id="mines-chosen">3</span>
+              <span class="dropdown-arrow">&#9662;</span>
+            </button>
+            <ul id="mines-dropdown-list" class="mines-dropdown-list"></ul>
+          </div>
+          <div id="next-container">
+            <p>next: <span>1:10x</span></p>
+          </div>
         </div>
+        <div id="progress-bar-container">
+          <div id="progress-bar-fill"></div>
+        </div>
+        <div id="pixi-container"></div>
+        <div class="random-autogame-bar">
+          <button class="random-btn">RANDOM</button>
+          <label class="autogame-switch">
+            <input type="checkbox" id="autogame-toggle" />
+            <span class="slider"></span>
+          </label>
+          <span class="autogame-label">Auto Game</span>
+        </div>
+        <div id="bet-bar">
+          <div class="bet-group">
+            <input
+              id="bet-amount-input"
+              class="bet-amount-input"
+              type="text"
+              readonly
+              placeholder="Bet USD"
+              value="0.30"
+            />
+            <button class="bet-circle-btn bet-minus">−</button>
+            <button class="bet-circle-btn bet-stack">&#128176;</button>
+            <button class="bet-circle-btn bet-plus">+</button>
+          </div>
+          <div
+            id="bet-list-container"
+            class="bet-list-container"
+            style="display: none"
+          >
+            <div class="bet-list-title">Bet USD</div>
+            <div class="bet-list-grid">
+              <button class="bet-list-btn">0.10</button>
+              <button class="bet-list-btn">0.20</button>
+              <button class="bet-list-btn">0.30</button>
+              <button class="bet-list-btn">0.40</button>
+              <button class="bet-list-btn">0.50</button>
+              <button class="bet-list-btn">0.60</button>
+              <button class="bet-list-btn">0.70</button>
+              <button class="bet-list-btn">0.80</button>
+              <button class="bet-list-btn">1.20</button>
+              <button class="bet-list-btn">2.00</button>
+              <button class="bet-list-btn">4.00</button>
+              <button class="bet-list-btn">10.00</button>
+              <button class="bet-list-btn">20.00</button>
+              <button class="bet-list-btn">50.00</button>
+              <button class="bet-list-btn">100.00</button>
+            </div>
+          </div>
+          <div id="keypad-container" style="display: none">
+            <div id="custom-keypad" class="custom-keypad">
+              <div class="keypad-row">
+                <button class="keypad-btn">1</button>
+                <button class="keypad-btn">2</button>
+                <button class="keypad-btn">3</button>
+              </div>
+              <div class="keypad-row">
+                <button class="keypad-btn">4</button>
+                <button class="keypad-btn">5</button>
+                <button class="keypad-btn">6</button>
+              </div>
+              <div class="keypad-row">
+                <button class="keypad-btn">7</button>
+                <button class="keypad-btn">8</button>
+                <button class="keypad-btn">9</button>
+              </div>
+              <div class="keypad-row">
+                <button class="keypad-btn">.</button>
+                <button class="keypad-btn">0</button>
+                <button class="keypad-btn keypad-backspace">&#9003;</button>
+              </div>
+              <div class="keypad-row">
+                <button class="keypad-btn keypad-confirm">
+                  <svg
+                    width="40"
+                    height="24"
+                    viewBox="0 0 40 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M8 8L20 20L32 8"
+                      stroke="white"
+                      stroke-width="4"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          <button class="bet-circle-btn bet-refresh">&#8635;</button>
+          <button class="bet-main-btn">
+            <span class="bet-play-icon">&#9654;</span>
+            BET
+          </button>
+          <button class="cashout-btn" style="display: none">
+            <span class="cashout-icon">💰</span>
+            CASH OUT
+          </button>
+        </div>
+      </div>
     </div>
     <script type="module" src="/src/main.ts"></script>
-</body>
+  </body>
 </html>

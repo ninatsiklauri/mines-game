@@ -73,7 +73,6 @@ function initGame(bombCount: number) {
   }
 
   updateNextMultiplier(bombCount);
-
 }
 
 setupMinesDropdown((value) => {
